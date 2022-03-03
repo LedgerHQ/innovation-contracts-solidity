@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 pragma solidity >=0.8.0;
 
-import {ERC721} from "../../../tokens/ERC721.sol";
+import {ERC721L} from "../../../tokens/ERC721L.sol";
 
-contract MockERC721 is ERC721 {
+contract MockERC721 is ERC721L {
     constructor(string memory _name, string memory _symbol)
-        ERC721(_name, _symbol)
+        ERC721L(_name, _symbol)
     {}
 
     function tokenURI(uint256)
