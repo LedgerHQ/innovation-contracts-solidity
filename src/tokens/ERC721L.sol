@@ -15,18 +15,16 @@ error NotMinted();
 
 /// @notice Solmate ERC721 extended with custom errors
 abstract contract ERC721L is ERC721 {
-
     // We can delete this constructor and called instead ERC721 to save 13gas
     constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {}
 
     /*///////////////////////////////////////////////////////////////
                               ERC721 LOGIC
     //////////////////////////////////////////////////////////////*/
-    function approve(address spender, uint256 id) public override virtual {
+    function approve(address spender, uint256 id) public virtual override {
         address owner = ownerOf[id];
 
-        if (msg.sender != owner && isApprovedForAll[owner][msg.sender] == false)
-            revert NotAuthorized();
+        if (msg.sender != owner && isApprovedForAll[owner][msg.sender] == false) revert NotAuthorized();
 
         getApproved[id] = spender;
 
@@ -37,15 +35,12 @@ abstract contract ERC721L is ERC721 {
         address from,
         address to,
         uint256 id
-    ) public override virtual {
+    ) public virtual override {
         if (from != ownerOf[id]) revert WrongFrom();
         if (to == address(0)) revert InvalidRecipient();
 
-        if (
-            msg.sender != from &&
-            msg.sender != getApproved[id] &&
-            isApprovedForAll[from][msg.sender] == false
-        ) revert NotAuthorized();
+        if (msg.sender != from && msg.sender != getApproved[id] && isApprovedForAll[from][msg.sender] == false)
+            revert NotAuthorized();
 
         // Underflow of the sender's balance is impossible because we check for
         // ownership above and the recipient's balance can't realistically overflow.
@@ -66,17 +61,12 @@ abstract contract ERC721L is ERC721 {
         address from,
         address to,
         uint256 id
-    ) public override virtual {
+    ) public virtual override {
         transferFrom(from, to, id);
 
         if (
             to.code.length != 0 &&
-            ERC721TokenReceiver(to).onERC721Received(
-                msg.sender,
-                from,
-                id,
-                ""
-            ) !=
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, from, id, "") !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert UnsafeRecipient();
     }
@@ -86,17 +76,12 @@ abstract contract ERC721L is ERC721 {
         address to,
         uint256 id,
         bytes memory data
-    ) public override virtual {
+    ) public virtual override {
         transferFrom(from, to, id);
 
         if (
             to.code.length != 0 &&
-            ERC721TokenReceiver(to).onERC721Received(
-                msg.sender,
-                from,
-                id,
-                data
-            ) !=
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, from, id, data) !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert UnsafeRecipient();
     }
@@ -105,7 +90,7 @@ abstract contract ERC721L is ERC721 {
                        INTERNAL MINT/BURN LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function _mint(address to, uint256 id) internal override virtual {
+    function _mint(address to, uint256 id) internal virtual override {
         if (to == address(0)) revert InvalidRecipient();
         if (ownerOf[id] != address(0)) revert AlreadyMinted();
 
@@ -119,7 +104,7 @@ abstract contract ERC721L is ERC721 {
         emit Transfer(address(0), to, id);
     }
 
-    function _burn(uint256 id) internal override virtual {
+    function _burn(uint256 id) internal virtual override {
         address owner = ownerOf[id];
         if (ownerOf[id] == address(0)) revert NotMinted();
 
@@ -139,17 +124,12 @@ abstract contract ERC721L is ERC721 {
                        INTERNAL SAFE MINT LOGIC
     //////////////////////////////////////////////////////////////*/
 
-    function _safeMint(address to, uint256 id) internal override virtual {
+    function _safeMint(address to, uint256 id) internal virtual override {
         _mint(to, id);
 
         if (
             to.code.length != 0 &&
-            ERC721TokenReceiver(to).onERC721Received(
-                msg.sender,
-                address(0),
-                id,
-                ""
-            ) !=
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, address(0), id, "") !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert UnsafeRecipient();
     }
@@ -158,17 +138,12 @@ abstract contract ERC721L is ERC721 {
         address to,
         uint256 id,
         bytes memory data
-    ) internal override virtual {
+    ) internal virtual override {
         _mint(to, id);
 
         if (
             to.code.length != 0 &&
-            ERC721TokenReceiver(to).onERC721Received(
-                msg.sender,
-                address(0),
-                id,
-                data
-            ) !=
+            ERC721TokenReceiver(to).onERC721Received(msg.sender, address(0), id, data) !=
             ERC721TokenReceiver.onERC721Received.selector
         ) revert UnsafeRecipient();
     }
