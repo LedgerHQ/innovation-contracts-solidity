@@ -48,9 +48,7 @@ interface Hevm {
 
     function record() external;
 
-    function accesses(address)
-        external
-        returns (bytes32[] memory reads, bytes32[] memory writes);
+    function accesses(address) external returns (bytes32[] memory reads, bytes32[] memory writes);
 
     function expectEmit(
         bool,
