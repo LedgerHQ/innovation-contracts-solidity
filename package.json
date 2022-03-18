@@ -4,7 +4,8 @@
   "description": "Collection of smart contracts written in Solidity",
   "scripts": {
     "prettier": "prettier --check \"src/**/*.sol\"",
-    "prettier:fix": "prettier --write \"src/**/*.sol\""
+    "prettier:fix": "prettier --write \"src/**/*.sol\"",
+    "lefthook": "npx @arkweid/lefthook run pre-push"
   },
   "repository": {
     "type": "git",

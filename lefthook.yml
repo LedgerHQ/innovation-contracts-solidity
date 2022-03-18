@@ -1,0 +1,8 @@
+# Automatically run quality checks before pushing code
+pre-push:
+  parallel: true
+  commands:
+    linter:
+      run: npm run prettier
+    tests:
+      run: forge test
