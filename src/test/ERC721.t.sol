@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-only
-pragma solidity 0.8.12;
+pragma solidity >0.8.12;
 
 import { DSTestPlus } from "./utils/DSTestPlus.sol";
 import { DSInvariantTest } from "./utils/DSInvariantTest.sol";
@@ -62,11 +62,6 @@ contract ERC721Test is DSTestPlus {
     }
 
     function invariantMetadata() public {
-        assertEq(token.name(), "Token");
-        assertEq(token.symbol(), "TKN");
-    }
-
-    function testMetadata() public {
         assertEq(token.name(), "Token");
         assertEq(token.symbol(), "TKN");
     }
@@ -412,9 +407,9 @@ contract ERC721Test is DSTestPlus {
     }
 
     function testTransferFrom(uint256 id, address to) public {
-        if (to == address(0)) to = address(0xBEEF);
-
         ERC721User from = new ERC721User(token);
+
+        if (to == address(0) || to == address(from)) to = address(0xBEEF);
 
         token.mint(address(from), id);
 
@@ -429,7 +424,7 @@ contract ERC721Test is DSTestPlus {
     }
 
     function testTransferFromSelf(uint256 id, address to) public {
-        if (to == address(0)) to = address(0xBEEF);
+        if (to == address(0) || to == address(this)) to = address(0xBEEF);
 
         token.mint(address(this), id);
 
@@ -442,7 +437,7 @@ contract ERC721Test is DSTestPlus {
     }
 
     function testTransferFromApproveAll(uint256 id, address to) public {
-        if (to == address(0)) to = address(0xBEEF);
+        if (to == address(0) || to == address(this)) to = address(0xBEEF);
 
         ERC721User from = new ERC721User(token);
 
@@ -459,11 +454,11 @@ contract ERC721Test is DSTestPlus {
     }
 
     function testSafeTransferFromToEOA(uint256 id, address to) public {
-        if (to == address(0)) to = address(0xBEEF);
+        ERC721User from = new ERC721User(token);
+
+        if (to == address(0) || to == address(this)) to = address(0xBEEF);
 
         if (uint256(uint160(to)) <= 18 || to.code.length > 0) return;
-
-        ERC721User from = new ERC721User(token);
 
         token.mint(address(from), id);
 
@@ -591,8 +586,7 @@ contract ERC721Test is DSTestPlus {
         uint256 id,
         address to
     ) public {
-        if (owner == address(0)) to = address(0xBEEF);
-        if (owner == address(this)) return;
+        if (owner == address(0) || owner == address(this)) owner = address(0xBEEF);
 
         token.mint(owner, id);
 
@@ -632,7 +626,7 @@ contract ERC721Test is DSTestPlus {
         address to,
         uint256 id
     ) public {
-        if (from == address(0)) to = address(0xBEEF);
+        if (from == address(this)) from = address(0xBEEF);
 
         token.mint(from, id);
 
