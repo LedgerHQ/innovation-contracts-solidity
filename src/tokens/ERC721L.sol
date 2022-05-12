@@ -22,7 +22,7 @@ abstract contract ERC721L is ERC721 {
                               ERC721 LOGIC
     //////////////////////////////////////////////////////////////*/
     function approve(address spender, uint256 id) public virtual override {
-        address owner = ownerOf[id];
+        address owner = ownerOf(id);
 
         if (msg.sender != owner && isApprovedForAll[owner][msg.sender] == false) revert NotAuthorized();
 
@@ -36,7 +36,7 @@ abstract contract ERC721L is ERC721 {
         address to,
         uint256 id
     ) public virtual override {
-        if (from != ownerOf[id]) revert WrongFrom();
+        if (from != ownerOf(id)) revert WrongFrom();
         if (to == address(0)) revert InvalidRecipient();
 
         if (msg.sender != from && msg.sender != getApproved[id] && isApprovedForAll[from][msg.sender] == false)
@@ -45,12 +45,12 @@ abstract contract ERC721L is ERC721 {
         // Underflow of the sender's balance is impossible because we check for
         // ownership above and the recipient's balance can't realistically overflow.
         unchecked {
-            balanceOf[from]--;
+            _balanceOf[from]--;
 
-            balanceOf[to]++;
+            _balanceOf[to]++;
         }
 
-        ownerOf[id] = to;
+        _ownerOf[id] = to;
 
         delete getApproved[id];
 
@@ -92,28 +92,28 @@ abstract contract ERC721L is ERC721 {
 
     function _mint(address to, uint256 id) internal virtual override {
         if (to == address(0)) revert InvalidRecipient();
-        if (ownerOf[id] != address(0)) revert AlreadyMinted();
+        if (_ownerOf[id] != address(0)) revert AlreadyMinted();
 
         // Counter overflow is incredibly unrealistic.
         unchecked {
-            balanceOf[to]++;
+            _balanceOf[to]++;
         }
 
-        ownerOf[id] = to;
+        _ownerOf[id] = to;
 
         emit Transfer(address(0), to, id);
     }
 
     function _burn(uint256 id) internal virtual override {
-        address owner = ownerOf[id];
-        if (ownerOf[id] == address(0)) revert NotMinted();
+        address owner = _ownerOf[id];
+        if (owner == address(0)) revert NotMinted();
 
         // Ownership check above ensures no underflow.
         unchecked {
-            balanceOf[owner]--;
+            _balanceOf[owner]--;
         }
 
-        delete ownerOf[id];
+        delete _ownerOf[id];
 
         delete getApproved[id];
 
