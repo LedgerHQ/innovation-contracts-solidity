@@ -16,7 +16,7 @@ To get all git modules dependencies
 
 In case you have VSCode path issue. The file is in .gitignore because path are absolute 
 
-    forge remappings > remappings.
+    forge remappings > remappings.txt
 
 ## Git hooks
 
